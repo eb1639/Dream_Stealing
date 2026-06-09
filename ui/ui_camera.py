@@ -3,6 +3,7 @@
 屏幕显示 = 视野范围, 渲染到viewport再scale填满屏幕
 """
 from core.config import *
+import core.config as _cfg
 
 VIEW_RADIUS = 6  # 视野半径(格), 提供约6格范围的局部视野
 VIEW_TILES = VIEW_RADIUS * 2 + 1  # 13x13格
@@ -12,11 +13,18 @@ VIEWPORT_SIZE = VIEW_TILES * TILE_SIZE  # 416 px
 class Camera:
     def __init__(self):
         # 视野中心在地图上的像素坐标
-        self.cx = float(MAP_COLS * TILE_SIZE // 2)  # 地图中心X(px)
-        self.cy = float(MAP_ROWS * TILE_SIZE // 2)  # 地图中心Y(px)
+        self.cx = float(_cfg.MAP_COLS * TILE_SIZE // 2)  # 地图中心X(px)
+        self.cy = float(_cfg.MAP_ROWS * TILE_SIZE // 2)  # 地图中心Y(px)
         self.target_entity = None
         self.follow_player = True
         self.scale = 1.0  # 由renderer计算
+
+    def reset(self):
+        """重置镜头到地图中心"""
+        self.cx = float(_cfg.MAP_PIXEL_W // 2)
+        self.cy = float(_cfg.MAP_PIXEL_H // 2)
+        self.target_entity = None
+        self.follow_player = True
 
     def set_target(self, entity):
         self.target_entity = entity
@@ -34,19 +42,19 @@ class Camera:
         self._clamp()
 
     def update(self, dt):
-        """每帧更新: 跟随目标"""
+        """每帧更新: 跟随目标(lerp平滑插值)"""
         if self.follow_player and self.target_entity:
             tx = self.target_entity.px
             ty = self.target_entity.py
-            self.cx += (tx - self.cx) * min(dt * 8, 1.0)
-            self.cy += (ty - self.cy) * min(dt * 8, 1.0)
+            self.cx += (tx - self.cx) * min(dt * 12, 1.0)
+            self.cy += (ty - self.cy) * min(dt * 12, 1.0)
         self._clamp()
 
     def _clamp(self):
         """限制视野不超出地图范围"""
         half = VIEWPORT_SIZE // 2
-        self.cx = max(half, min(MAP_PIXEL_W - half, self.cx))
-        self.cy = max(half, min(MAP_PIXEL_H - half, self.cy))
+        self.cx = max(half, min(_cfg.MAP_PIXEL_W - half, self.cx))
+        self.cy = max(half, min(_cfg.MAP_PIXEL_H - half, self.cy))
 
     @property
     def center_grid(self):
@@ -67,8 +75,8 @@ class Camera:
         left, top, _, _ = self.viewport_map_rect
         c0 = max(0, int(left // TILE_SIZE))
         r0 = max(0, int(top // TILE_SIZE))
-        c1 = min(MAP_COLS - 1, int((left + VIEWPORT_SIZE) // TILE_SIZE))
-        r1 = min(MAP_ROWS - 1, int((top + VIEWPORT_SIZE) // TILE_SIZE))
+        c1 = min(_cfg.MAP_COLS - 1, int((left + VIEWPORT_SIZE) // TILE_SIZE))
+        r1 = min(_cfg.MAP_ROWS - 1, int((top + VIEWPORT_SIZE) // TILE_SIZE))
         return c0, r0, c1, r1
 
     def screen_to_grid(self, screen_x, screen_y, game_area_x, game_area_y, scale):

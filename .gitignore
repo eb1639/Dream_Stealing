@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# 编辑器 / IDE
+.idea/
+.vscode/
+.claude/
+*.swp
+*.swo
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# 临时 / 备份目录
+backup_*/
+Dream_Stealing_GitHub/
+*_backup/
+
+# 调试/分析脚本（一次性排查用, 不属于正式代码）
+analyze_*.py
+check_*.py
+debug_*.py
+find_*.py
+fix_*.py
+verify_*.py
+visualize_*.py
+smoke_*.py
+tools/debug_*.py
+tools/verify_*.py
+tools/test_*.py
+tools/headless_test.py
+
+# 运行时数据
+save.json
+
+# 临时 Office 文件
+~$*.pptx
+~$*.docx
+~$*.xlsx
+*.tmp
+
+# 原始地图图片（仅保留像素版）
+苔藓地图.jpg
+雪地地图.jpg
